@@ -1,40 +1,15 @@
-//Focus on search icon
+// Focus on search icon when clicked
 document.querySelector(".fundoo-dash-search i").addEventListener("click", function() {
     document.getElementById("searchInput").focus();
 });
 
-
-// Modal 
 document.addEventListener("DOMContentLoaded", function () {
-    // Select all note elements
-    const notes = document.querySelectorAll(".fundoo-dash-note");
-    const modalTextarea = document.getElementById("modalNoteContent");
+    const noteInput = document.getElementById("noteInput");
+    const notesGrid = document.querySelector(".fundoo-dash-notes-grid");
+    const modalNoteContent = document.getElementById("modalNoteContent");
     const noteModal = new bootstrap.Modal(document.getElementById("noteModal"));
-
-    let currentNote = null; // To track the clicked note
-
-    notes.forEach(note => {
-        note.addEventListener("click", function () {
-            currentNote = this; // Store the clicked note
-            modalTextarea.value = this.textContent; // Load note content into modal textarea
-            noteModal.show(); // Show the modal
-        });
-    });
-
-    // Save changes when user clicks outside the textarea (focus out)
-    modalTextarea.addEventListener("blur", function () {
-        if (currentNote) {
-            currentNote.textContent = modalTextarea.value; // Update note content
-        }
-    });
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-    const noteInput = document.getElementById("noteInput"); // Textarea input
-    const notesGrid = document.querySelector(".fundoo-dash-notes-grid"); // Notes container
-    const modalNoteContent = document.getElementById("modalNoteContent"); // Modal textarea
-    const jwtToken = localStorage.getItem("jwtToken"); // Get JWT token from local storage
-    let currentView = "notes"; // Tracks current tab (notes, archive, trash)
+    const jwtToken = localStorage.getItem("jwtToken");
+    let currentView = "notes";
 
     if (!jwtToken) {
         alert("You must be logged in to create and view notes.");
@@ -44,28 +19,28 @@ document.addEventListener("DOMContentLoaded", function () {
     // Fetch Notes on Page Load
     fetchNotes();
 
-    // Navbar Click Handlers
-    document.getElementById("notesTab").addEventListener("click", function () {
-        currentView = "notes";
-        fetchNotes();
-    });
+    // Sidebar Navigation Event Listeners
+    document.getElementById("notesTab").addEventListener("click", () => switchView("notes"));
+    document.getElementById("archiveTab").addEventListener("click", () => switchView("archive"));
+    document.getElementById("trashTab").addEventListener("click", () => switchView("trash"));
 
-    document.getElementById("archiveTab").addEventListener("click", function () {
-        currentView = "archive";
+    function switchView(view) {
+        currentView = view;
         fetchNotes();
-    });
 
-    document.getElementById("trashTab").addEventListener("click", function () {
-        currentView = "trash";
-        fetchNotes();
-    });
+        // Show create note input only when in "Notes" tab
+        const createNoteSection = document.querySelector(".fundoo-dash-create-note");
+        if (currentView === "notes") {
+            createNoteSection.style.display = "block"; // Show
+        } else {
+            createNoteSection.style.display = "none"; // Hide
+        }
+    }
 
-    // Save note on blur (focus out)
+    // Save note on blur
     noteInput.addEventListener("blur", function () {
         const content = noteInput.value.trim();
-        if (content) {
-            saveNote(content);
-        }
+        if (content) saveNote(content);
     });
 
     function fetchNotes() {
@@ -75,29 +50,31 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .then(response => response.json())
         .then(notes => {
-            if (Array.isArray(notes)) {
-                notesGrid.innerHTML = ""; // Clear UI
-                notes.forEach(note => {
-                    if (note.is_deleted) {
-                        if (currentView === "trash") {
-                            addNoteToUI(note.id, note.content, note.colour, "trash");
-                            added = true;
-                        }
-                    } else if (note.is_archived) {
-                        if (currentView === "archive") {
-                            addNoteToUI(note.id, note.content, note.colour, "archive");
-                            added = true;
-                        }
-                    } else {
-                        if (currentView === "notes") {
-                            addNoteToUI(note.id, note.content, note.colour, "notes");
-                            added = true;
-                        }
-                    }
-                });
-            } else {
+            if (!Array.isArray(notes)) {
                 console.error("Error fetching notes:", notes);
+                return;
             }
+
+            notesGrid.innerHTML = ""; // Clear UI before adding new notes
+
+            notes.forEach(note => {
+                let shouldAdd = false;
+
+                switch (currentView) {
+                    case "notes":
+                        shouldAdd = !note.is_deleted && !note.is_archived;
+                        break;
+                    case "archive":
+                        shouldAdd = note.is_archived && !note.is_deleted;
+                        break;
+                    case "trash":
+                        shouldAdd = note.is_deleted;
+                        break;
+                }
+
+                if (shouldAdd) addNoteToUI(note.id, note.content, note.colour);
+            });
+
         })
         .catch(error => console.error("Request Failed:", error));
     }
@@ -114,9 +91,8 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(response => response.json())
         .then(data => {
             if (data.note) {
-                console.log("Note Saved:", data.note);
-                addNoteToUI(data.note.id, data.note.content, data.note.colour); 
-                noteInput.value = ""; // Clear input field
+                addNoteToUI(data.note.id, data.note.content, data.note.colour);
+                noteInput.value = "";
             } else {
                 console.error("Error:", data.errors);
             }
@@ -124,45 +100,14 @@ document.addEventListener("DOMContentLoaded", function () {
         .catch(error => console.error("Request Failed:", error));
     }
 
-    // function addNoteToUI(id, content, colour = "white", isArchived = false) {
-    //     const noteDiv = document.createElement("div");
-    //     noteDiv.classList.add("fundoo-dash-note");
-    //     noteDiv.dataset.id = id;
-    //     noteDiv.style.backgroundColor = colour;
-    //     noteDiv.innerHTML = `
-    //         <p>${content}</p>
-    //         <div class="note-icons">
-    //             <i class="fas fa-box-archive archive-icon" title="Archive"></i>
-    //             <i class="fas fa-trash delete-icon" title="Delete"></i>
-    //         </div>
-    //     `;
-
-    //     noteDiv.addEventListener("click", function (event) {
-    //         if (event.target.classList.contains("delete-icon") || event.target.classList.contains("archive-icon")) return;
-    //         modalNoteContent.value = content;
-    //         const noteModal = new bootstrap.Modal(document.getElementById("noteModal"));
-    //         noteModal.show();
-    //     });
-
-    //     noteDiv.querySelector(".archive-icon").addEventListener("click", function () {
-    //         toggleArchive(id);
-    //     });
-
-    //     noteDiv.querySelector(".delete-icon").addEventListener("click", function () {
-    //         toggleTrash(id);
-    //     });
-
-    //     notesGrid.prepend(noteDiv);
-    // }
-
-    function addNoteToUI(id, content, colour = "white", isArchived = false, isDeleted = false) {
+    function addNoteToUI(id, content, colour = "white") {
         const noteDiv = document.createElement("div");
         noteDiv.classList.add("fundoo-dash-note");
         noteDiv.dataset.id = id;
         noteDiv.style.backgroundColor = colour;
         
         let iconsHTML = "";
-    
+
         if (currentView === "notes") {
             iconsHTML = `
                 <i class="fas fa-box-archive archive-icon" title="Archive"></i>
@@ -179,54 +124,43 @@ document.addEventListener("DOMContentLoaded", function () {
                 <i class="fas fa-trash-alt delete-permanent-icon" title="Delete Permanently"></i>
             `;
         }
-    
+
         noteDiv.innerHTML = `
             <p>${content}</p>
             <div class="note-icons">${iconsHTML}</div>
         `;
-    
-        // Attach event listeners based on the current view
+
+        noteDiv.addEventListener("click", function (event) {
+            if (event.target.classList.contains("archive-icon") || 
+                event.target.classList.contains("delete-icon") || 
+                event.target.classList.contains("unarchive-icon") || 
+                event.target.classList.contains("restore-icon") || 
+                event.target.classList.contains("delete-permanent-icon")) return;
+
+            modalNoteContent.value = content;
+            noteModal.show();
+        });
+
         if (currentView === "notes") {
-            noteDiv.querySelector(".archive-icon").addEventListener("click", function () {
-                toggleArchive(id);
-            });
-    
-            noteDiv.querySelector(".delete-icon").addEventListener("click", function () {
-                toggleTrash(id);
-            });
-    
+            noteDiv.querySelector(".archive-icon").addEventListener("click", () => toggleArchive(id));
+            noteDiv.querySelector(".delete-icon").addEventListener("click", () => toggleTrash(id));
         } else if (currentView === "archive") {
-            noteDiv.querySelector(".unarchive-icon").addEventListener("click", function () {
-                toggleArchive(id);
-            });
-    
-            noteDiv.querySelector(".delete-icon").addEventListener("click", function () {
-                toggleTrash(id);
-            });
-    
+            noteDiv.querySelector(".unarchive-icon").addEventListener("click", () => toggleArchive(id));
+            noteDiv.querySelector(".delete-icon").addEventListener("click", () => toggleTrash(id));
         } else if (currentView === "trash") {
-            noteDiv.querySelector(".restore-icon").addEventListener("click", function () {
-                restoreNote(id, isArchived);
-            });
-    
-            noteDiv.querySelector(".delete-permanent-icon").addEventListener("click", function () {
-                deleteNote(id);
-            });
+            noteDiv.querySelector(".restore-icon").addEventListener("click", () => restoreNote(id));
+            noteDiv.querySelector(".delete-permanent-icon").addEventListener("click", () => deleteNote(id));
         }
-    
+
         notesGrid.prepend(noteDiv);
     }
-    
 
     function toggleArchive(id) {
         fetch(`http://localhost:3000/api/v1/notes/archiveToggle/${id}`, {
             method: "PUT",
             headers: { "Authorization": `Bearer ${jwtToken}` }
         })
-        .then(response => response.json())
-        .then(() => {
-            fetchNotes();
-        })
+        .then(() => fetchNotes())
         .catch(error => console.error("Error:", error));
     }
 
@@ -235,37 +169,25 @@ document.addEventListener("DOMContentLoaded", function () {
             method: "PUT",
             headers: { "Authorization": `Bearer ${jwtToken}` }
         })
-        .then(response => response.json())
-        .then(() => {
-            fetchNotes();
-        })
+        .then(() => fetchNotes())
         .catch(error => console.error("Error:", error));
     }
 
-    function restoreNote(id, wasArchived) {
+    function restoreNote(id) {
         fetch(`http://localhost:3000/api/v1/notes/trashToggle/${id}`, {
             method: "PUT",
             headers: { "Authorization": `Bearer ${jwtToken}` }
         })
-        .then(response => response.json())
-        .then(() => {
-            fetchNotes();
-        })
+        .then(() => fetchNotes())
         .catch(error => console.error("Error:", error));
     }
-    
+
     function deleteNote(id) {
         fetch(`http://localhost:3000/api/v1/notes/deleteNote/${id}`, {
             method: "DELETE",
             headers: { "Authorization": `Bearer ${jwtToken}` }
         })
-        .then(response => response.json())
-        .then(() => {
-            fetchNotes();
-        })
+        .then(() => fetchNotes())
         .catch(error => console.error("Error:", error));
     }
-    
 });
-
-
