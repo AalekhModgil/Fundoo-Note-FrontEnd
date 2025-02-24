@@ -1,0 +1,81 @@
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Fundoo Notes Dashboard</title>
+        <link rel="stylesheet" href="../styles/fundooDashboard.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        <script defer src="../js/fundooDashboard.js"></script>
+    </head>
+    <body>
+
+        <div class="fundoo-dash-container">
+
+            <div class="fundoo-dash-sidebar">
+                <h2>Fundoo</h2>
+                <nav>
+                    <ul>
+                        <li id="notesTab"><i class="fas fa-sticky-note"></i> Notes</li>
+                        <li id="archiveTab"><i class="fas fa-archive"></i> Archive</li>
+                        <li id="trashTab"><i class="fas fa-trash"></i> Trash</li>
+                    </ul>
+                </nav>
+            </div>
+            
+            <div class="fundoo-dash-main-content">
+
+                <header>
+                    <div class="fundoo-dash-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search notes...">
+                    </div>
+                    <div class="fundoo-dash-profile">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-secondary fundoo-dash-profile-button" data-bs-toggle="dropdown" aria-expanded="false">
+                              A
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                              <li><button class="dropdown-item" type="button">Profile Settings</button></li>
+                              <li><button class="dropdown-item" type="button">Logout</button></li>
+                            </ul>
+                          </div>                          
+                    </div>
+                </header>
+                
+                <section class="fundoo-dash-create-note">
+                    <textarea id="noteInput" placeholder="Create a new note..."></textarea>
+                </section>
+
+                <section class="fundoo-dash-notes-grid">
+                    <!-- <div class="fundoo-dash-note">Sample Note 1</div>
+                    <div class="fundoo-dash-note">Sample Note 2</div>
+                    <div class="fundoo-dash-note">Sample Note 3</div>
+                    <div class="fundoo-dash-note">Sample Note 4</div> -->
+                </section>
+
+            </div>
+
+        </div>
+
+        <div class="modal fade" id="noteModal" tabindex="-1" aria-labelledby="noteModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="noteModalLabel">Note Details</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <textarea id="modalNoteContent" class="form-control" rows="5"></textarea>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+    </body>
+    </html>

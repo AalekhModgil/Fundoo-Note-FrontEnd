@@ -1,0 +1,100 @@
+/* General Reset */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Container for Signup */
+.signup-container {
+    display: flex;
+    background-color: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    width: 950px;
+    align-items: center;
+}
+
+/* Left Side - Form */
+.signup-card {
+    flex: 1;
+    padding-right: 30px;
+}
+
+/* Title Styling */
+.signup-title {
+    font-size: 28px;
+    color: #f4b400;
+    margin-bottom: 10px;
+}
+
+.signup-subtitle {
+    font-size: 18px;
+    font-weight: normal;
+    margin-bottom: 20px;
+}
+
+/* Input Fields */
+.form-floating input {
+    border-radius: 6px;
+}
+
+/* Small Helper Text */
+.signup-helper {
+    font-size: 14px;
+    color: black;
+    margin-bottom: 10px;
+}
+
+/* Buttons */
+.signup-submit-button {
+    background-color: #4285f4;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.signup-submit-button:hover {
+    background-color: #357ae8;
+}
+
+/* Sign in Link */
+.signup-signin-link {
+    font-size: 14px;
+    color: #4285f4;
+    text-decoration: none;
+}
+
+.signup-signin-link:hover {
+    text-decoration: underline;
+}
+
+/* Right Side - Image */
+.signup-image {
+    width: 400px;
+    height: auto;
+}
+
+.signup-image-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.signup-text {
+    font-weight: 500;
+}
+
+/* Actions */
+.signup-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
