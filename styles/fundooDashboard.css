@@ -195,6 +195,18 @@ body {
     right: 0;
 }
 
+.note-icons .unarchive-icon:hover{
+    background-color: #ffe0b2;
+}
+
+.note-icons .restore-icon:hover{
+    background-color: #ffe0b2;
+}
+
+.note-icons .delete-permanent-icon:hover{
+    background-color: #ffe0b2;
+}
+
 .note-icons .archive-icon:hover {
     /* color: blue; */
     background-color: #ffe0b2;
@@ -222,3 +234,35 @@ body {
     outline: none;
     box-shadow: none;
 }
+
+.modal-icons {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    justify-content: flex-end;
+}
+
+.modal-icons i {
+    font-size: 1.2em;
+    color: gray;
+    background: white;
+    padding: 5px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+}
+
+.modal-icons .archive-icon:hover,
+.modal-icons .unarchive-icon:hover {
+    background-color: #ffe0b2;
+}
+
+.modal-icons .delete-icon:hover,
+.modal-icons .delete-permanent-icon:hover {
+    background-color: #ffe0b2;
+}
+
+.modal-icons .restore-icon:hover {
+    background-color: #ffe0b2;
+}
+

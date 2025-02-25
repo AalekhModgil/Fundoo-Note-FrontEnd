@@ -154,6 +154,46 @@ document.addEventListener("DOMContentLoaded", function () {
                 event.target.classList.contains("delete-permanent-icon")) return;
 
             modalNoteContent.value = content;
+            
+            // Populate modal icons based on current view
+            const modalIcons = document.querySelector(".modal-icons");
+            modalIcons.innerHTML = ""; // Clear previous icons
+
+            if (currentView === "notes") {
+                modalIcons.innerHTML = `
+                    <i class="fas fa-box-archive archive-icon" title="Archive"></i>
+                    <i class="fas fa-trash delete-icon" title="Move to Trash"></i>
+                `;
+                modalIcons.querySelector(".archive-icon").addEventListener("click", () => {
+                    toggleArchive(id).then(() => noteModal.hide());
+                });
+                modalIcons.querySelector(".delete-icon").addEventListener("click", () => {
+                    toggleTrash(id).then(() => noteModal.hide());
+                });
+            } else if (currentView === "archive") {
+                modalIcons.innerHTML = `
+                    <i class="fas fa-folder-open unarchive-icon" title="Unarchive"></i>
+                    <i class="fas fa-trash delete-icon" title="Move to Trash"></i>
+                `;
+                modalIcons.querySelector(".unarchive-icon").addEventListener("click", () => {
+                    toggleArchive(id).then(() => noteModal.hide());
+                });
+                modalIcons.querySelector(".delete-icon").addEventListener("click", () => {
+                    toggleTrash(id).then(() => noteModal.hide());
+                });
+            } else if (currentView === "trash") {
+                modalIcons.innerHTML = `
+                    <i class="fas fa-undo restore-icon" title="Restore"></i>
+                    <i class="fas fa-trash-alt delete-permanent-icon" title="Delete Permanently"></i>
+                `;
+                modalIcons.querySelector(".restore-icon").addEventListener("click", () => {
+                    restoreNote(id).then(() => noteModal.hide());
+                });
+                modalIcons.querySelector(".delete-permanent-icon").addEventListener("click", () => {
+                    deleteNote(id).then(() => noteModal.hide());
+                });
+            }
+
             noteModal.show();
         });
 
@@ -172,7 +212,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function toggleArchive(id) {
-        fetch(`http://localhost:3000/api/v1/notes/archiveToggle/${id}`, {
+        return fetch(`http://localhost:3000/api/v1/notes/archiveToggle/${id}`, {
             method: "PUT",
             headers: { "Authorization": `Bearer ${jwtToken}` }
         })
@@ -181,7 +221,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function toggleTrash(id) {
-        fetch(`http://localhost:3000/api/v1/notes/trashToggle/${id}`, {
+        return fetch(`http://localhost:3000/api/v1/notes/trashToggle/${id}`, {
             method: "PUT",
             headers: { "Authorization": `Bearer ${jwtToken}` }
         })
@@ -190,7 +230,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function restoreNote(id) {
-        fetch(`http://localhost:3000/api/v1/notes/trashToggle/${id}`, {
+        return fetch(`http://localhost:3000/api/v1/notes/trashToggle/${id}`, {
             method: "PUT",
             headers: { "Authorization": `Bearer ${jwtToken}` }
         })
@@ -199,7 +239,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function deleteNote(id) {
-        fetch(`http://localhost:3000/api/v1/notes/deleteNote/${id}`, {
+        return fetch(`http://localhost:3000/api/v1/notes/deleteNote/${id}`, {
             method: "DELETE",
             headers: { "Authorization": `Bearer ${jwtToken}` }
         })
