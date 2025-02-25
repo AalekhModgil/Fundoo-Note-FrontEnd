@@ -18,10 +18,10 @@ body {
 }
 
 .fundoo-dash-sidebar h2 {
-    margin: 0;
     font-size: 1.8em;
     color: orange;
     font-weight: bold;
+    margin-top: -25px;
 }
 
 .fundoo-dash-sidebar ul {
@@ -63,6 +63,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 1em;
+    margin-top: -25px;
 }
 
 .fundoo-dash-search {
