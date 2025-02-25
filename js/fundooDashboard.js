@@ -35,6 +35,22 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
             createNoteSection.style.display = "none"; // Hide
         }
+
+        // Remove active class from all tabs
+        document.querySelectorAll(".fundoo-dash-sidebar li").forEach(tab => {
+            tab.classList.remove("active");
+        });
+
+         // Add active class to the clicked tab
+        document.getElementById(`${view}Tab`).classList.add("active");
+
+        document.body.classList.remove("notes-active", "archive-active", "trash-active");
+        document.body.classList.add(`${view}-active`);
+
+        // Show/hide create note section instantly
+        document.querySelector(".fundoo-dash-create-note").style.display = view === "notes" ? "block" : "none";
+
+        fetchNotes();
     }
 
     // Save note on blur
