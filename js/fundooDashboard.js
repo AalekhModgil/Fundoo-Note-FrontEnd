@@ -3,6 +3,17 @@ document.querySelector(".fundoo-dash-search i").addEventListener("click", functi
     document.getElementById("searchInput").focus();
 });
 
+
+// Logout
+
+document.getElementById("logoutButton").addEventListener("click", function () {
+    // Remove JWT token
+    localStorage.removeItem("jwtToken");
+
+    // Redirect to login page
+    window.location.href = "../pages/fundooLogin.html"; // Change this to your actual login page
+});
+
 document.addEventListener("DOMContentLoaded", function () {
     const noteInput = document.getElementById("noteInput");
     const notesGrid = document.querySelector(".fundoo-dash-notes-grid");

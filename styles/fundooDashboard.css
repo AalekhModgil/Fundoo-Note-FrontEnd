@@ -117,7 +117,7 @@ body {
     min-height: 2.5em;
     max-height: 6em;
     padding: 10px;
-    border: 1px solid #ddd;
+    border-color: transparent !important;
     border-radius: 8px;
     font-size: 1em;
     resize: none;
@@ -126,9 +126,10 @@ body {
 
 .fundoo-dash-create-note textarea:focus {
     min-height: 8em;
-    border-color: orange;
+    border-color: transparent !important;
     outline: none;
 }
+
 
 .fundoo-dash-notes-grid {
     display: grid;
