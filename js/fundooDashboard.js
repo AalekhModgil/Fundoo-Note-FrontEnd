@@ -9,6 +9,8 @@ document.querySelector(".fundoo-dash-search i").addEventListener("click", functi
 document.getElementById("logoutButton").addEventListener("click", function () {
     // Remove JWT token
     localStorage.removeItem("jwtToken");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userName");
 
     // Redirect to login page
     window.location.href = "../pages/fundooLogin.html"; // Change this to your actual login page

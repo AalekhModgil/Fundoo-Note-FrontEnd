@@ -24,6 +24,8 @@ document.addEventListener("DOMContentLoaded",function(){
         .then(data => {
             if (data.token) {
                 localStorage.setItem("jwtToken",data.token);
+                localStorage.setItem("userEmail",data.user.email);
+                localStorage.setItem("userName",data.user.name)
                 alert("Login successful!");
                 window.location.href = "../pages/fundooDashboard.html";
             }
