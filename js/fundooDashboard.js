@@ -4,24 +4,14 @@ document.querySelector(".fundoo-dash-search i").addEventListener("click", functi
 });
 
 
-// Logout
-
-document.getElementById("logoutButton").addEventListener("click", function () {
-    // Remove JWT token
-    localStorage.removeItem("jwtToken");
-    localStorage.removeItem("userEmail");
-    localStorage.removeItem("userName");
-
-    // Redirect to login page
-    window.location.href = "../pages/fundooLogin.html"; // Change this to your actual login page
-});
-
 document.addEventListener("DOMContentLoaded", function () {
     const noteInput = document.getElementById("noteInput");
     const notesGrid = document.querySelector(".fundoo-dash-notes-grid");
     const modalNoteContent = document.getElementById("modalNoteContent");
     const noteModal = new bootstrap.Modal(document.getElementById("noteModal"));
     const jwtToken = localStorage.getItem("jwtToken");
+    const userName = localStorage.getItem("userName");
+    const userEmail = localStorage.getItem("userEmail");
     let currentView = "notes";
 
     if (!jwtToken) {
@@ -31,6 +21,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Fetch Notes on Page Load
     fetchNotes();
+
+    // Logout
+    document.getElementById("logoutButton").addEventListener("click", function () {
+    // Remove JWT token
+    localStorage.removeItem("jwtToken");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userName")
+
+    // Redirect to login page
+    window.location.href = "../pages/fundooLogin.html"; // Change this to your actual login page
+    });
 
     // Sidebar Navigation Event Listeners
     document.getElementById("notesTab").addEventListener("click", () => switchView("notes"));
