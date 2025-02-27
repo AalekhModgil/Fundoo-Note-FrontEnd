@@ -382,3 +382,11 @@ body {
 .logout-btn:hover {
     background-color: #f39c12;
 }
+
+.color-picker-popup {
+    display: none; /* Initially hidden, shown via JS */
+}
+
+.color-picker-popup.active {
+    display: grid;
+}

@@ -274,17 +274,84 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // New function to handle colour change
     function openColourPicker(noteId, noteElement) {
-        let currentColour = noteElement.style.backgroundColor || "white";
-        let newColour = prompt("Enter a colour (e.g., '#ff0000' or 'red'):", currentColour);
-        if (newColour) {
-            updateNoteColour(noteId, newColour, noteElement);
-        }
+        // Create a color picker popup
+        const colorPicker = document.createElement("div");
+        colorPicker.classList.add("color-picker-popup");
+        colorPicker.style.position = "absolute";
+        colorPicker.style.zIndex = "1000";
+        colorPicker.style.background = "#fff";
+        colorPicker.style.borderRadius = "8px";
+        colorPicker.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.1)";
+        colorPicker.style.padding = "10px";
+        colorPicker.style.display = "grid";
+        colorPicker.style.gridTemplateColumns = "repeat(5, 30px)";
+        colorPicker.style.gap = "5px";
+    
+        // Define a palette of colors (similar to Google Keep)
+        const colors = [
+            "#f28b82", "#fbbc04", "#fff475", "#ccff90", "#a7ffeb",
+            "#cbf0f8", "#aecbfa", "#d7aefb", "#fdcfe8", "#e6c9a8",
+            "#e8eaed"
+        ];
+    
+        // Create color circles
+        colors.forEach(color => {
+            const colorCircle = document.createElement("div");
+            colorCircle.style.width = "30px";
+            colorCircle.style.height = "30px";
+            colorCircle.style.borderRadius = "50%";
+            colorCircle.style.backgroundColor = color;
+            colorCircle.style.cursor = "pointer";
+            colorCircle.style.border = "2px solid #fff";
+            colorCircle.addEventListener("click", () => {
+                updateNoteColour(noteId, color, noteElement);
+                document.body.removeChild(colorPicker); // Remove picker after selection
+            });
+            colorCircle.addEventListener("mouseover", () => {
+                colorCircle.style.borderColor = "#ddd";
+            });
+            colorCircle.addEventListener("mouseout", () => {
+                colorCircle.style.borderColor = "#fff";
+            });
+            colorPicker.appendChild(colorCircle);
+        });
+    
+        // Add close button (optional, like the 'x' in Google Keep)
+        const closeButton = document.createElement("div");
+        closeButton.textContent = "×";
+        closeButton.style.position = "absolute";
+        closeButton.style.top = "5px";
+        closeButton.style.right = "5px";
+        closeButton.style.fontSize = "18px";
+        closeButton.style.cursor = "pointer";
+        closeButton.addEventListener("click", () => {
+            document.body.removeChild(colorPicker);
+        });
+        colorPicker.appendChild(closeButton);
+    
+        // Position the picker near the note
+        const rect = noteElement.getBoundingClientRect();
+        colorPicker.style.top = `${rect.bottom + window.scrollY + 5}px`;
+        colorPicker.style.left = `${rect.left + window.scrollX}px`;
+    
+        // Append to body
+        document.body.appendChild(colorPicker);
+    
+        // Remove picker if clicked outside
+        document.addEventListener("click", function handleOutsideClick(event) {
+            if (!colorPicker.contains(event.target) && event.target !== noteElement.querySelector(".colour-icon")) {
+                document.body.removeChild(colorPicker);
+                document.removeEventListener("click", handleOutsideClick);
+            }
+        });
     }
 
     function updateNoteColour(noteId, colour, noteElement) {
-        fetch(`http://localhost:3000/api/v1/notes/updateColour/${noteId}/${colour}`, {
+        fetch(`http://localhost:3000/api/v1/notes/updateColour/${noteId}/${encodeURIComponent(colour)}`, {
             method: "PUT",
-            headers: { "Authorization": `Bearer ${jwtToken}` }
+            headers: {
+                "Authorization": `Bearer ${jwtToken}`
+            }
         })
         .then(response => response.json())
         .then(data => {
