@@ -46,8 +46,9 @@
                 </div>                           
             </header>
             
-            <!-- Note Creation -->
+            <!-- Note Creation with Title -->
             <section class="fundoo-dash-create-note">
+                <input type="text" id="noteTitleInput" placeholder="Title">
                 <textarea id="noteInput" placeholder="Create a new note..."></textarea>
             </section>
 
@@ -65,6 +66,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content fundoo-dash-note">
                 <div class="modal-body">
+                    <input type="text" id="modalNoteTitle" class="form-control" placeholder="Title">
                     <textarea id="modalNoteContent" class="form-control" rows="5"></textarea>
                 </div>
                 <div class="modal-icons">
@@ -73,7 +75,6 @@
             </div>
         </div>
     </div>
-    
 
 </body>
 </html>

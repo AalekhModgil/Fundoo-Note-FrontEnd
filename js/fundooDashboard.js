@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
+    const noteTitleInput = document.getElementById("noteTitleInput");
     const noteInput = document.getElementById("noteInput");
     const notesGrid = document.querySelector(".fundoo-dash-notes-grid");
+    const modalNoteTitle = document.getElementById("modalNoteTitle");
     const modalNoteContent = document.getElementById("modalNoteContent");
     const noteModal = new bootstrap.Modal(document.getElementById("noteModal"));
     const jwtToken = localStorage.getItem("jwtToken");
@@ -82,10 +84,17 @@ document.addEventListener("DOMContentLoaded", function () {
         fetchNotes();
     }
 
-    // Save note on blur
+    // Save note on blur (title or content)
     noteInput.addEventListener("blur", function () {
+        const title = noteTitleInput.value.trim();
         const content = noteInput.value.trim();
-        if (content) saveNote(content);
+        if (title || content) saveNote(title, content);
+    });
+
+    noteTitleInput.addEventListener("blur", function () {
+        const title = noteTitleInput.value.trim();
+        const content = noteInput.value.trim();
+        if (title || content) saveNote(title, content);
     });
 
     function fetchNotes() {
@@ -117,25 +126,26 @@ document.addEventListener("DOMContentLoaded", function () {
                         break;
                 }
 
-                if (shouldAdd) addNoteToUI(note.id, note.content, note.colour || "white");
+                if (shouldAdd) addNoteToUI(note.id, note.title || "", note.content || "", note.colour || "white");
             });
         })
         .catch(error => console.error("Request Failed:", error));
     }
 
-    function saveNote(content) {
+    function saveNote(title, content) {
         fetch("http://localhost:3000/api/v1/notes/create", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${jwtToken}`
             },
-            body: JSON.stringify({ title: "New Note", content })
+            body: JSON.stringify({ title, content })
         })
         .then(response => response.json())
         .then(data => {
             if (data.note) {
-                addNoteToUI(data.note.id, data.note.content, data.note.colour || "white");
+                addNoteToUI(data.note.id, data.note.title || "", data.note.content || "", data.note.colour || "white");
+                noteTitleInput.value = "";
                 noteInput.value = "";
             } else {
                 console.error("Error:", data.errors);
@@ -144,7 +154,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .catch(error => console.error("Request Failed:", error));
     }
 
-    function addNoteToUI(id, content, colour = "white") {
+    function addNoteToUI(id, title, content, colour = "white") {
         const noteDiv = document.createElement("div");
         noteDiv.classList.add("fundoo-dash-note");
         noteDiv.dataset.id = id;
@@ -172,6 +182,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         noteDiv.innerHTML = `
+            <h3>${title}</h3>
             <p>${content}</p>
             <div class="note-icons">${iconsHTML}</div>
         `;
@@ -184,9 +195,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 event.target.classList.contains("delete-permanent-icon") || 
                 event.target.classList.contains("colour-icon")) return;
 
-            // Set modal content and color
+            // Set modal title, content, and color
+            modalNoteTitle.value = noteDiv.querySelector("h3").textContent;
             modalNoteContent.value = noteDiv.querySelector("p").textContent;
-            const noteColor = noteDiv.style.backgroundColor || "white"; // Fallback to white if no color
+            const noteColor = noteDiv.style.backgroundColor || "white";
             document.querySelector(".modal-content.fundoo-dash-note").style.backgroundColor = noteColor;
 
             const modalIcons = document.querySelector(".modal-icons");
@@ -223,21 +235,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
             noteModal.show();
 
-            // Update note when modal textarea loses focus
-            modalNoteContent.onblur = function () {
+            // Update note when modal fields lose focus
+            modalNoteTitle.onblur = function () {
+                const updatedTitle = modalNoteTitle.value.trim();
                 const updatedContent = modalNoteContent.value.trim();
-                if (updatedContent !== noteDiv.querySelector("p").textContent) {
-                    updateNote(id, updatedContent, noteDiv);
+                if (updatedTitle !== noteDiv.querySelector("h3").textContent || updatedContent !== noteDiv.querySelector("p").textContent) {
+                    updateNote(id, updatedTitle, updatedContent, noteDiv);
+                }
+            };
+
+            modalNoteContent.onblur = function () {
+                const updatedTitle = modalNoteTitle.value.trim();
+                const updatedContent = modalNoteContent.value.trim();
+                if (updatedTitle !== noteDiv.querySelector("h3").textContent || updatedContent !== noteDiv.querySelector("p").textContent) {
+                    updateNote(id, updatedTitle, updatedContent, noteDiv);
                 }
             };
 
             // Update note when modal is hidden
             noteModal._element.addEventListener('hidden.bs.modal', function () {
+                const updatedTitle = modalNoteTitle.value.trim();
                 const updatedContent = modalNoteContent.value.trim();
-                if (updatedContent !== noteDiv.querySelector("p").textContent) {
-                    updateNote(id, updatedContent, noteDiv);
+                if (updatedTitle !== noteDiv.querySelector("h3").textContent || updatedContent !== noteDiv.querySelector("p").textContent) {
+                    updateNote(id, updatedTitle, updatedContent, noteDiv);
                 }
-                // Reset modal color when closed (optional, remove if you want it to persist)
                 document.querySelector(".modal-content.fundoo-dash-note").style.backgroundColor = "white";
             }, { once: true });
         });
@@ -295,20 +316,22 @@ document.addEventListener("DOMContentLoaded", function () {
         .catch(error => console.error("Error:", error));
     }
 
-    function updateNote(id, content, noteElement) {
+    function updateNote(id, title, content, noteElement) {
         fetch(`http://localhost:3000/api/v1/notes/updateNote/${id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${jwtToken}`
             },
-            body: JSON.stringify({ content: content })
+            body: JSON.stringify({ title, content })
         })
         .then(response => response.json())
         .then(data => {
             if (data.note) {
-                noteElement.querySelector("p").textContent = data.note.content;
-                modalNoteContent.value = data.note.content;
+                noteElement.querySelector("h3").textContent = data.note.title || "";
+                noteElement.querySelector("p").textContent = data.note.content || "";
+                modalNoteTitle.value = data.note.title || "";
+                modalNoteContent.value = data.note.content || "";
                 console.log("Note updated successfully:", data.note);
             } else {
                 console.error("Error updating note:", data.errors);
@@ -394,7 +417,6 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(data => {
             if (data.message) {
                 noteElement.style.backgroundColor = colour;
-                // Update modal color if it’s open
                 if (noteModal._isShown) {
                     document.querySelector(".modal-content.fundoo-dash-note").style.backgroundColor = colour;
                 }

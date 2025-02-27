@@ -94,13 +94,25 @@ body {
 
 .fundoo-dash-create-note {
     display: flex;
+    flex-direction: column;
     width: 60%;
     padding: 1em;
     background: white;
     border-radius: 10px;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
     margin: 2vh auto;
-    align-items: center;
+    /* align-items: center; */
+}
+
+.fundoo-dash-create-note input#noteTitleInput {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    outline: none;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    background: transparent;
 }
 
 .fundoo-dash-create-note textarea {
@@ -119,6 +131,36 @@ body {
     min-height: 8em;
     border-color: transparent !important;
     outline: none;
+}
+
+.fundoo-dash-note h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.fundoo-dash-note p {
+    margin: 0;
+    font-size: 1em;
+}
+
+.modal-body input#modalNoteTitle {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 1.2em;
+    font-weight: bold;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.modal-body textarea#modalNoteContent {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 1.1em;
+    width: 100%;
+    resize: none;
 }
 
 .fundoo-dash-notes-grid {
