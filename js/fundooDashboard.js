@@ -235,24 +235,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             noteModal.show();
 
-            // Update note when modal fields lose focus
-            modalNoteTitle.onblur = function () {
-                const updatedTitle = modalNoteTitle.value.trim();
-                const updatedContent = modalNoteContent.value.trim();
-                if (updatedTitle !== noteDiv.querySelector("h3").textContent || updatedContent !== noteDiv.querySelector("p").textContent) {
-                    updateNote(id, updatedTitle, updatedContent, noteDiv);
-                }
-            };
-
-            modalNoteContent.onblur = function () {
-                const updatedTitle = modalNoteTitle.value.trim();
-                const updatedContent = modalNoteContent.value.trim();
-                if (updatedTitle !== noteDiv.querySelector("h3").textContent || updatedContent !== noteDiv.querySelector("p").textContent) {
-                    updateNote(id, updatedTitle, updatedContent, noteDiv);
-                }
-            };
-
-            // Update note when modal is hidden
+            // Update note only when modal is hidden
             noteModal._element.addEventListener('hidden.bs.modal', function () {
                 const updatedTitle = modalNoteTitle.value.trim();
                 const updatedContent = modalNoteContent.value.trim();
