@@ -20,7 +20,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (userName) document.getElementById("profileName").textContent = `Hi, ${userName}`;
-    if (userEmail) document.getElementById("profileEmail").textContent = userEmail;
+    if (userEmail) {
+        document.getElementById("profileEmail").textContent = userEmail;
+        const emailInitial = userEmail.charAt(0).toUpperCase();
+        document.getElementById("profileButton").textContent = emailInitial; // Already set
+        document.getElementById("profileAvatar").textContent = emailInitial; // Set avatar
+    } 
 
      // Extract first letter of email
      const emailInitial = userEmail.charAt(0).toUpperCase();

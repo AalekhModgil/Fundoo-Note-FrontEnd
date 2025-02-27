@@ -37,12 +37,14 @@
                 <div class="fundoo-dash-profile">
                     <button class="fundoo-dash-profile-button" id="profileButton"></button>
                     <div class="profile-dropdown" id="profileDropdown">
-                        <p id="profileName">User Name</p>
+                        <!-- Logo/Avatar (using email initial as fallback) -->
+                        <div style="width: 40px; height: 40px; background-color: orange; border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; font-weight: bold;" id="profileAvatar"></div>
+                        <p id="profileName">Hi, User Name</p>
                         <p id="profileEmail">user@example.com</p>
                         <hr>
                         <button id="logoutButton" class="logout-btn">Logout</button>
                     </div>
-                </div>                           
+                </div>                       
             </header>
             
             <!-- Note Creation -->
