@@ -3,7 +3,6 @@ document.querySelector(".fundoo-dash-search i").addEventListener("click", functi
     document.getElementById("searchInput").focus();
 });
 
-
 document.addEventListener("DOMContentLoaded", function () {
     const noteInput = document.getElementById("noteInput");
     const notesGrid = document.querySelector(".fundoo-dash-notes-grid");
@@ -23,15 +22,9 @@ document.addEventListener("DOMContentLoaded", function () {
     if (userEmail) {
         document.getElementById("profileEmail").textContent = userEmail;
         const emailInitial = userEmail.charAt(0).toUpperCase();
-        document.getElementById("profileButton").textContent = emailInitial; // Already set
-        document.getElementById("profileAvatar").textContent = emailInitial; // Set avatar
-    } 
-
-     // Extract first letter of email
-     const emailInitial = userEmail.charAt(0).toUpperCase();
-    
-     // Set the profile button letter
-     profileButton.textContent = emailInitial;
+        document.getElementById("profileButton").textContent = emailInitial;
+        document.getElementById("profileAvatar").textContent = emailInitial;
+    }
 
     // Toggle dropdown on button click
     profileButton.addEventListener("click", function (event) {
@@ -39,8 +32,8 @@ document.addEventListener("DOMContentLoaded", function () {
         profileDropdown.style.display = profileDropdown.style.display === "block" ? "none" : "block";
     });
 
-     // Hide dropdown when clicking outside
-     document.addEventListener("click", function (event) {
+    // Hide dropdown when clicking outside
+    document.addEventListener("click", function (event) {
         if (!profileDropdown.contains(event.target) && event.target !== profileButton) {
             profileDropdown.style.display = "none";
         }
@@ -51,13 +44,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Logout
     document.getElementById("logoutButton").addEventListener("click", function () {
-    // Remove JWT token
-    localStorage.removeItem("jwtToken");
-    localStorage.removeItem("userEmail");
-    localStorage.removeItem("userName")
-
-    // Redirect to login page
-    window.location.href = "../pages/fundooLogin.html"; // Change this to your actual login page
+        localStorage.removeItem("jwtToken");
+        localStorage.removeItem("userEmail");
+        localStorage.removeItem("userName");
+        window.location.href = "../pages/fundooLogin.html";
     });
 
     // Sidebar Navigation Event Listeners
@@ -69,26 +59,22 @@ document.addEventListener("DOMContentLoaded", function () {
         currentView = view;
         fetchNotes();
 
-        // Show create note input only when in "Notes" tab
         const createNoteSection = document.querySelector(".fundoo-dash-create-note");
         if (currentView === "notes") {
-            createNoteSection.style.display = "block"; // Show
+            createNoteSection.style.display = "block";
         } else {
-            createNoteSection.style.display = "none"; // Hide
+            createNoteSection.style.display = "none";
         }
 
-        // Remove active class from all tabs
         document.querySelectorAll(".fundoo-dash-sidebar li").forEach(tab => {
             tab.classList.remove("active");
         });
 
-         // Add active class to the clicked tab
         document.getElementById(`${view}Tab`).classList.add("active");
 
         document.body.classList.remove("notes-active", "archive-active", "trash-active");
         document.body.classList.add(`${view}-active`);
 
-        // Show/hide create note section instantly
         document.querySelector(".fundoo-dash-create-note").style.display = view === "notes" ? "block" : "none";
 
         fetchNotes();
@@ -112,7 +98,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            notesGrid.innerHTML = ""; // Clear UI before adding new notes
+            notesGrid.innerHTML = "";
 
             notes.forEach(note => {
                 let shouldAdd = false;
@@ -129,9 +115,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         break;
                 }
 
-                if (shouldAdd) addNoteToUI(note.id, note.content, note.colour);
+                if (shouldAdd) addNoteToUI(note.id, note.content, note.colour || "white");
             });
-
         })
         .catch(error => console.error("Request Failed:", error));
     }
@@ -148,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(response => response.json())
         .then(data => {
             if (data.note) {
-                addNoteToUI(data.note.id, data.note.content, data.note.colour);
+                addNoteToUI(data.note.id, data.note.content, data.note.colour || "white");
                 noteInput.value = "";
             } else {
                 console.error("Error:", data.errors);
@@ -162,23 +147,25 @@ document.addEventListener("DOMContentLoaded", function () {
         noteDiv.classList.add("fundoo-dash-note");
         noteDiv.dataset.id = id;
         noteDiv.style.backgroundColor = colour;
-        
-        let iconsHTML = "";
 
+        let iconsHTML = "";
         if (currentView === "notes") {
             iconsHTML = `
                 <i class="fas fa-box-archive archive-icon" title="Archive"></i>
                 <i class="fas fa-trash delete-icon" title="Move to Trash"></i>
+                <i class="fas fa-palette colour-icon" title="Change Colour"></i>
             `;
         } else if (currentView === "archive") {
             iconsHTML = `
                 <i class="fas fa-folder-open unarchive-icon" title="Unarchive"></i>
                 <i class="fas fa-trash delete-icon" title="Move to Trash"></i>
+                <i class="fas fa-palette colour-icon" title="Change Colour"></i>
             `;
         } else if (currentView === "trash") {
             iconsHTML = `
                 <i class="fas fa-undo restore-icon" title="Restore"></i>
                 <i class="fas fa-trash-alt delete-permanent-icon" title="Delete Permanently"></i>
+                <i class="fas fa-palette colour-icon" title="Change Colour"></i>
             `;
         }
 
@@ -192,47 +179,41 @@ document.addEventListener("DOMContentLoaded", function () {
                 event.target.classList.contains("delete-icon") || 
                 event.target.classList.contains("unarchive-icon") || 
                 event.target.classList.contains("restore-icon") || 
-                event.target.classList.contains("delete-permanent-icon")) return;
+                event.target.classList.contains("delete-permanent-icon") || 
+                event.target.classList.contains("colour-icon")) return;
 
             modalNoteContent.value = content;
-            
-            // Populate modal icons based on current view
+
             const modalIcons = document.querySelector(".modal-icons");
-            modalIcons.innerHTML = ""; // Clear previous icons
+            modalIcons.innerHTML = "";
 
             if (currentView === "notes") {
                 modalIcons.innerHTML = `
                     <i class="fas fa-box-archive archive-icon" title="Archive"></i>
                     <i class="fas fa-trash delete-icon" title="Move to Trash"></i>
+                    <i class="fas fa-palette colour-icon" title="Change Colour"></i>
                 `;
-                modalIcons.querySelector(".archive-icon").addEventListener("click", () => {
-                    toggleArchive(id).then(() => noteModal.hide());
-                });
-                modalIcons.querySelector(".delete-icon").addEventListener("click", () => {
-                    toggleTrash(id).then(() => noteModal.hide());
-                });
+                modalIcons.querySelector(".archive-icon").addEventListener("click", () => toggleArchive(id).then(() => noteModal.hide()));
+                modalIcons.querySelector(".delete-icon").addEventListener("click", () => toggleTrash(id).then(() => noteModal.hide()));
+                modalIcons.querySelector(".colour-icon").addEventListener("click", () => openColourPicker(id, noteDiv));
             } else if (currentView === "archive") {
                 modalIcons.innerHTML = `
                     <i class="fas fa-folder-open unarchive-icon" title="Unarchive"></i>
                     <i class="fas fa-trash delete-icon" title="Move to Trash"></i>
+                    <i class="fas fa-palette colour-icon" title="Change Colour"></i>
                 `;
-                modalIcons.querySelector(".unarchive-icon").addEventListener("click", () => {
-                    toggleArchive(id).then(() => noteModal.hide());
-                });
-                modalIcons.querySelector(".delete-icon").addEventListener("click", () => {
-                    toggleTrash(id).then(() => noteModal.hide());
-                });
+                modalIcons.querySelector(".unarchive-icon").addEventListener("click", () => toggleArchive(id).then(() => noteModal.hide()));
+                modalIcons.querySelector(".delete-icon").addEventListener("click", () => toggleTrash(id).then(() => noteModal.hide()));
+                modalIcons.querySelector(".colour-icon").addEventListener("click", () => openColourPicker(id, noteDiv));
             } else if (currentView === "trash") {
                 modalIcons.innerHTML = `
                     <i class="fas fa-undo restore-icon" title="Restore"></i>
                     <i class="fas fa-trash-alt delete-permanent-icon" title="Delete Permanently"></i>
+                    <i class="fas fa-palette colour-icon" title="Change Colour"></i>
                 `;
-                modalIcons.querySelector(".restore-icon").addEventListener("click", () => {
-                    restoreNote(id).then(() => noteModal.hide());
-                });
-                modalIcons.querySelector(".delete-permanent-icon").addEventListener("click", () => {
-                    deleteNote(id).then(() => noteModal.hide());
-                });
+                modalIcons.querySelector(".restore-icon").addEventListener("click", () => restoreNote(id).then(() => noteModal.hide()));
+                modalIcons.querySelector(".delete-permanent-icon").addEventListener("click", () => deleteNote(id).then(() => noteModal.hide()));
+                modalIcons.querySelector(".colour-icon").addEventListener("click", () => openColourPicker(id, noteDiv));
             }
 
             noteModal.show();
@@ -241,12 +222,15 @@ document.addEventListener("DOMContentLoaded", function () {
         if (currentView === "notes") {
             noteDiv.querySelector(".archive-icon").addEventListener("click", () => toggleArchive(id));
             noteDiv.querySelector(".delete-icon").addEventListener("click", () => toggleTrash(id));
+            noteDiv.querySelector(".colour-icon").addEventListener("click", () => openColourPicker(id, noteDiv));
         } else if (currentView === "archive") {
             noteDiv.querySelector(".unarchive-icon").addEventListener("click", () => toggleArchive(id));
             noteDiv.querySelector(".delete-icon").addEventListener("click", () => toggleTrash(id));
+            noteDiv.querySelector(".colour-icon").addEventListener("click", () => openColourPicker(id, noteDiv));
         } else if (currentView === "trash") {
             noteDiv.querySelector(".restore-icon").addEventListener("click", () => restoreNote(id));
             noteDiv.querySelector(".delete-permanent-icon").addEventListener("click", () => deleteNote(id));
+            noteDiv.querySelector(".colour-icon").addEventListener("click", () => openColourPicker(id, noteDiv));
         }
 
         notesGrid.prepend(noteDiv);
@@ -286,5 +270,31 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .then(() => fetchNotes())
         .catch(error => console.error("Error:", error));
+    }
+
+    // New function to handle colour change
+    function openColourPicker(noteId, noteElement) {
+        let currentColour = noteElement.style.backgroundColor || "white";
+        let newColour = prompt("Enter a colour (e.g., '#ff0000' or 'red'):", currentColour);
+        if (newColour) {
+            updateNoteColour(noteId, newColour, noteElement);
+        }
+    }
+
+    function updateNoteColour(noteId, colour, noteElement) {
+        fetch(`http://localhost:3000/api/v1/notes/updateColour/${noteId}/${colour}`, {
+            method: "PUT",
+            headers: { "Authorization": `Bearer ${jwtToken}` }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                noteElement.style.backgroundColor = colour;
+                console.log(data.message);
+            } else {
+                console.error("Error:", data.errors);
+            }
+        })
+        .catch(error => console.error("Request Failed:", error));
     }
 });

@@ -121,7 +121,6 @@ body {
     outline: none;
 }
 
-
 .fundoo-dash-notes-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -150,7 +149,7 @@ body {
     bottom: 8px;
     right: 8px;
     display: flex;
-    gap: 5px; /* Increases space between icons */
+    gap: 5px;
 }
 
 .note-icons i {
@@ -176,7 +175,6 @@ body {
 }
 
 .note-icons .delete-icon:hover {
-    /* color: red; */
     background-color: #ffe0b2;
 }
 
@@ -187,20 +185,19 @@ body {
     right: 0;
 }
 
-.note-icons .unarchive-icon:hover{
+.note-icons .unarchive-icon:hover {
     background-color: #ffe0b2;
 }
 
-.note-icons .restore-icon:hover{
+.note-icons .restore-icon:hover {
     background-color: #ffe0b2;
 }
 
-.note-icons .delete-permanent-icon:hover{
+.note-icons .delete-permanent-icon:hover {
     background-color: #ffe0b2;
 }
 
 .note-icons .archive-icon:hover {
-    /* color: blue; */
     background-color: #ffe0b2;
 }
 
@@ -211,6 +208,29 @@ body {
 
 .note-icons .archive-icon {
     margin-right: 0.1em;
+}
+
+/* Colour Icon */
+.note-icons .colour-icon,
+.modal-icons .colour-icon {
+    font-size: 1.2em;
+    color: gray;
+    background: white;
+    padding: 5px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: color 0.3s ease-in-out, background 0.2s ease-in-out;
+    display: none;
+}
+
+.fundoo-dash-note:hover .note-icons .colour-icon,
+.modal-icons .colour-icon {
+    display: inline-block;
+}
+
+.note-icons .colour-icon:hover,
+.modal-icons .colour-icon:hover {
+    background-color: #ffe0b2;
 }
 
 #modalNoteContent {
@@ -277,81 +297,74 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.2s ease-in-out;
 }
 
 .fundoo-dash-profile-button:hover {
-    background-color: #f39c12; /* Slightly darker orange */
+    background-color: #f39c12;
 }
 
 .profile-dropdown {
     position: absolute;
     top: 50px;
     right: 0;
-    background: #f5f8fa; /* Light gray background like the image */
+    background: #f5f8fa;
     border: none;
-    border-radius: 12px; /* Rounded corners like the image */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     padding: 15px;
-    width: 250px; /* Wider to fit content comfortably */
+    width: 250px;
     display: none;
     z-index: 100;
     transition: opacity 0.2s ease-in-out;
 }
 
-/* Fade-in effect */
 .profile-dropdown[style*="display: block"] {
     opacity: 1;
 }
 
-/* Logo/Avatar styling */
 .profile-dropdown img {
     width: 40px;
     height: 40px;
-    border-radius: 50%; /* Circular logo/avatar */
-    background-color: #4caf50; /* Green background like the image's "A" */
+    border-radius: 50%;
+    background-color: #ff9800;
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 18px;
     font-weight: bold;
-    margin: 0 auto 15px; /* Centered with spacing below */
-    overflow: hidden; /* Ensures content stays within circle */
+    margin: 0 auto 15px;
+    overflow: hidden;
 }
 
 .profile-dropdown img::after {
-    content: attr(alt); /* Fallback to show initial if no image */
+    content: attr(alt);
 }
 
-/* Greeting and name */
 .profile-dropdown #profileName {
     margin: 0;
     font-size: 16px;
     font-weight: 500;
-    color: #202124; /* Dark gray for text */
+    color: #202124;
     text-align: center;
     padding: 5px 0;
 }
 
-/* Email */
 .profile-dropdown #profileEmail {
     margin: 5px 0 15px;
     font-size: 14px;
-    color: #5f6368; /* Lighter gray for email */
+    color: #5f6368;
     text-align: center;
     padding: 5px 0;
 }
 
-/* Divider line */
 .profile-dropdown hr {
     border: 0;
     height: 1px;
-    background: #dadce0; /* Subtle gray line */
+    background: #dadce0;
     margin: 15px 0;
 }
 
-/* Logout button */
 .logout-btn {
     width: 100%;
     padding: 10px;
@@ -359,7 +372,7 @@ body {
     background-color: orange;
     color: white;
     cursor: pointer;
-    border-radius: 8px; /* Rounded like the image's buttons */
+    border-radius: 8px;
     font-size: 14px;
     font-weight: 500;
     text-align: center;
@@ -367,5 +380,5 @@ body {
 }
 
 .logout-btn:hover {
-    background-color: #f39c12; /* Darker orange on hover */
+    background-color: #f39c12;
 }
