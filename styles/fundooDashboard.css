@@ -390,3 +390,9 @@ body {
 .color-picker-popup.active {
     display: grid;
 }
+
+.modal-content.fundoo-dash-note {
+    background-color: inherit; /* Default to inherit unless set */
+    border-radius: 8px; /* Match note div */
+    padding: 15px; /* Match note div */
+}

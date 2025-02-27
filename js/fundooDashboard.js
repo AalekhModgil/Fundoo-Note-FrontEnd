@@ -184,8 +184,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 event.target.classList.contains("delete-permanent-icon") || 
                 event.target.classList.contains("colour-icon")) return;
 
-            // Set the modal content to the current note content every time it opens
+            // Set modal content and color
             modalNoteContent.value = noteDiv.querySelector("p").textContent;
+            const noteColor = noteDiv.style.backgroundColor || "white"; // Fallback to white if no color
+            document.querySelector(".modal-content.fundoo-dash-note").style.backgroundColor = noteColor;
 
             const modalIcons = document.querySelector(".modal-icons");
             modalIcons.innerHTML = "";
@@ -235,6 +237,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (updatedContent !== noteDiv.querySelector("p").textContent) {
                     updateNote(id, updatedContent, noteDiv);
                 }
+                // Reset modal color when closed (optional, remove if you want it to persist)
+                document.querySelector(".modal-content.fundoo-dash-note").style.backgroundColor = "white";
             }, { once: true });
         });
 
@@ -303,9 +307,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(response => response.json())
         .then(data => {
             if (data.note) {
-                // Update the note div in the UI
                 noteElement.querySelector("p").textContent = data.note.content;
-                // Ensure modal content is updated immediately
                 modalNoteContent.value = data.note.content;
                 console.log("Note updated successfully:", data.note);
             } else {
@@ -392,6 +394,10 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(data => {
             if (data.message) {
                 noteElement.style.backgroundColor = colour;
+                // Update modal color if it’s open
+                if (noteModal._isShown) {
+                    document.querySelector(".modal-content.fundoo-dash-note").style.backgroundColor = colour;
+                }
                 console.log(data.message);
             } else {
                 console.error("Error:", data.errors);
