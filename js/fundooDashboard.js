@@ -1,8 +1,3 @@
-// Focus on search icon when clicked
-document.querySelector(".fundoo-dash-search i").addEventListener("click", function() {
-    document.getElementById("searchInput").focus();
-});
-
 document.addEventListener("DOMContentLoaded", function () {
     const noteInput = document.getElementById("noteInput");
     const notesGrid = document.querySelector(".fundoo-dash-notes-grid");
@@ -11,6 +6,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const jwtToken = localStorage.getItem("jwtToken");
     const userName = localStorage.getItem("userName");
     const userEmail = localStorage.getItem("userEmail");
+    const profileButton = document.getElementById("profileButton");
+    const profileDropdown = document.getElementById("profileDropdown");
     let currentView = "notes";
 
     if (!jwtToken) {
@@ -54,6 +51,11 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("notesTab").addEventListener("click", () => switchView("notes"));
     document.getElementById("archiveTab").addEventListener("click", () => switchView("archive"));
     document.getElementById("trashTab").addEventListener("click", () => switchView("trash"));
+
+    // Focus on search input when search icon is clicked
+    document.querySelector(".fundoo-dash-search i").addEventListener("click", function () {
+        document.getElementById("searchInput").focus();
+    });
 
     function switchView(view) {
         currentView = view;
@@ -182,7 +184,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 event.target.classList.contains("delete-permanent-icon") || 
                 event.target.classList.contains("colour-icon")) return;
 
-            modalNoteContent.value = content;
+            // Set the modal content to the current note content every time it opens
+            modalNoteContent.value = noteDiv.querySelector("p").textContent;
 
             const modalIcons = document.querySelector(".modal-icons");
             modalIcons.innerHTML = "";
@@ -217,6 +220,22 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             noteModal.show();
+
+            // Update note when modal textarea loses focus
+            modalNoteContent.onblur = function () {
+                const updatedContent = modalNoteContent.value.trim();
+                if (updatedContent !== noteDiv.querySelector("p").textContent) {
+                    updateNote(id, updatedContent, noteDiv);
+                }
+            };
+
+            // Update note when modal is hidden
+            noteModal._element.addEventListener('hidden.bs.modal', function () {
+                const updatedContent = modalNoteContent.value.trim();
+                if (updatedContent !== noteDiv.querySelector("p").textContent) {
+                    updateNote(id, updatedContent, noteDiv);
+                }
+            }, { once: true });
         });
 
         if (currentView === "notes") {
@@ -272,9 +291,31 @@ document.addEventListener("DOMContentLoaded", function () {
         .catch(error => console.error("Error:", error));
     }
 
-    // New function to handle colour change
+    function updateNote(id, content, noteElement) {
+        fetch(`http://localhost:3000/api/v1/notes/updateNote/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${jwtToken}`
+            },
+            body: JSON.stringify({ content: content })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.note) {
+                // Update the note div in the UI
+                noteElement.querySelector("p").textContent = data.note.content;
+                // Ensure modal content is updated immediately
+                modalNoteContent.value = data.note.content;
+                console.log("Note updated successfully:", data.note);
+            } else {
+                console.error("Error updating note:", data.errors);
+            }
+        })
+        .catch(error => console.error("Request Failed:", error));
+    }
+
     function openColourPicker(noteId, noteElement) {
-        // Create a color picker popup
         const colorPicker = document.createElement("div");
         colorPicker.classList.add("color-picker-popup");
         colorPicker.style.position = "absolute";
@@ -286,15 +327,13 @@ document.addEventListener("DOMContentLoaded", function () {
         colorPicker.style.display = "grid";
         colorPicker.style.gridTemplateColumns = "repeat(5, 30px)";
         colorPicker.style.gap = "5px";
-    
-        // Define a palette of colors (similar to Google Keep)
+
         const colors = [
             "#f28b82", "#fbbc04", "#fff475", "#ccff90", "#a7ffeb",
             "#cbf0f8", "#aecbfa", "#d7aefb", "#fdcfe8", "#e6c9a8",
             "#e8eaed"
         ];
-    
-        // Create color circles
+
         colors.forEach(color => {
             const colorCircle = document.createElement("div");
             colorCircle.style.width = "30px";
@@ -305,7 +344,7 @@ document.addEventListener("DOMContentLoaded", function () {
             colorCircle.style.border = "2px solid #fff";
             colorCircle.addEventListener("click", () => {
                 updateNoteColour(noteId, color, noteElement);
-                document.body.removeChild(colorPicker); // Remove picker after selection
+                document.body.removeChild(colorPicker);
             });
             colorCircle.addEventListener("mouseover", () => {
                 colorCircle.style.borderColor = "#ddd";
@@ -315,8 +354,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
             colorPicker.appendChild(colorCircle);
         });
-    
-        // Add close button (optional, like the 'x' in Google Keep)
+
         const closeButton = document.createElement("div");
         closeButton.textContent = "×";
         closeButton.style.position = "absolute";
@@ -328,16 +366,13 @@ document.addEventListener("DOMContentLoaded", function () {
             document.body.removeChild(colorPicker);
         });
         colorPicker.appendChild(closeButton);
-    
-        // Position the picker near the note
+
         const rect = noteElement.getBoundingClientRect();
         colorPicker.style.top = `${rect.bottom + window.scrollY + 5}px`;
         colorPicker.style.left = `${rect.left + window.scrollX}px`;
-    
-        // Append to body
+
         document.body.appendChild(colorPicker);
-    
-        // Remove picker if clicked outside
+
         document.addEventListener("click", function handleOutsideClick(event) {
             if (!colorPicker.contains(event.target) && event.target !== noteElement.querySelector(".colour-icon")) {
                 document.body.removeChild(colorPicker);
