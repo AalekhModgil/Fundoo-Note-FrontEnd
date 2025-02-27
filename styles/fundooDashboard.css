@@ -92,15 +92,6 @@ body {
     flex: 1;
 }
 
-.fundoo-dash-profile-button {
-    background-color: orange !important;
-    border: none !important;
-    border-radius: 50% !important;
-    font-size: 1.2em;
-    width: 40px;
-    height: 40px;
-}
-
 .fundoo-dash-create-note {
     display: flex;
     width: 60%;
@@ -267,3 +258,61 @@ body {
     background-color: #ffe0b2;
 }
 
+.fundoo-dash-profile {
+    position: relative;
+    display: inline-block;
+}
+
+.fundoo-dash-profile-button {
+    width: 40px;
+    height: 40px;
+    background-color: orange;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fundoo-dash-profile-button:hover{
+    background-color: #f39c12;
+}
+
+.profile-dropdown {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    width: 200px;
+    display: none;
+    z-index: 100;
+}
+
+.profile-dropdown p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #333;
+}
+
+.logout-btn {
+    width: 100%;
+    padding: 8px;
+    border: none;
+    background-color: orange;
+    color: white;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.logout-btn:hover {
+    background-color: #f39c12;
+}

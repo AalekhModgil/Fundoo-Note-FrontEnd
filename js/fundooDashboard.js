@@ -19,6 +19,28 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
+    if (userName) document.getElementById("profileName").textContent = `Hi, ${userName}`;
+    if (userEmail) document.getElementById("profileEmail").textContent = userEmail;
+
+     // Extract first letter of email
+     const emailInitial = userEmail.charAt(0).toUpperCase();
+    
+     // Set the profile button letter
+     profileButton.textContent = emailInitial;
+
+    // Toggle dropdown on button click
+    profileButton.addEventListener("click", function (event) {
+        event.stopPropagation();
+        profileDropdown.style.display = profileDropdown.style.display === "block" ? "none" : "block";
+    });
+
+     // Hide dropdown when clicking outside
+     document.addEventListener("click", function (event) {
+        if (!profileDropdown.contains(event.target) && event.target !== profileButton) {
+            profileDropdown.style.display = "none";
+        }
+    });
+
     // Fetch Notes on Page Load
     fetchNotes();
 

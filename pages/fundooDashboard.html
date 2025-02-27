@@ -35,16 +35,14 @@
                     <input type="text" id="searchInput" placeholder="Search notes...">
                 </div>
                 <div class="fundoo-dash-profile">
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-secondary fundoo-dash-profile-button" data-bs-toggle="dropdown" aria-expanded="false">
-                          A
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                          <li><button class="dropdown-item" type="button">Profile Settings</button></li>
-                          <li><button class="dropdown-item" type="button" id="logoutButton">Logout</button></li>
-                        </ul>
-                    </div>                          
-                </div>
+                    <button class="fundoo-dash-profile-button" id="profileButton"></button>
+                    <div class="profile-dropdown" id="profileDropdown">
+                        <p id="profileName">User Name</p>
+                        <p id="profileEmail">user@example.com</p>
+                        <hr>
+                        <button id="logoutButton" class="logout-btn">Logout</button>
+                    </div>
+                </div>                           
             </header>
             
             <!-- Note Creation -->
