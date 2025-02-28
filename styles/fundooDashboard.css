@@ -109,8 +109,7 @@ body {
     padding: 10px;
     border: none;
     outline: none;
-    font-size: 1.2em;
-    font-weight: bold;
+    font-size: 1.4em;
     margin-bottom: 10px;
     background: transparent;
 }
@@ -135,8 +134,8 @@ body {
 
 .fundoo-dash-note h3 {
     margin: 0 0 10px 0;
-    font-size: 1.2em;
-    font-weight: bold;
+    font-size: 1.3em;
+    /* font-weight: bold; */
 }
 
 .fundoo-dash-note p {
@@ -148,8 +147,8 @@ body {
     border: none;
     outline: none;
     background: transparent;
-    font-size: 1.2em;
-    font-weight: bold;
+    font-size: 1.5em;
+    /* font-weight: bold; */
     width: 100%;
     margin-bottom: 10px;
 }
