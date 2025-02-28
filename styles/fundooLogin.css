@@ -79,3 +79,30 @@ p {
 .fundoo-login-submit-button:hover {
     background-color: #357ae8;
 }
+
+
+.modal-content {
+    border-radius: 0.625rem;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    border-bottom: none;
+}
+
+.modal-title {
+    color: #4285F4;
+    font-size: 1.25rem;
+}
+
+.btn-close {
+    filter: grayscale(1);
+}
+
+.form-label {
+    color: #666;
+}
+
+.modal-body .form-control {
+    color: gray;
+}
