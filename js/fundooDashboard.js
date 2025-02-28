@@ -10,7 +10,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const userEmail = localStorage.getItem("userEmail");
     const profileButton = document.getElementById("profileButton");
     const profileDropdown = document.getElementById("profileDropdown");
+    const menuIcon = document.getElementById("menuIcon");
+    const sidebar = document.querySelector(".fundoo-dash-sidebar");
+    const headerTitle = document.getElementById("headerTitle");
+    const searchInput = document.getElementById("searchInput");
     let currentView = "notes";
+    let allNotes = []; // Store all fetched notes for filtering
 
     if (!jwtToken) {
         alert("You must be logged in to create and view notes.");
@@ -38,6 +43,11 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+    // Toggle sidebar between compact and expanded
+    menuIcon.addEventListener("click", function () {
+        sidebar.classList.toggle("compact");
+    });
+
     // Fetch Notes on Page Load
     fetchNotes();
 
@@ -56,7 +66,58 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Focus on search input when search icon is clicked
     document.querySelector(".fundoo-dash-search i").addEventListener("click", function () {
-        document.getElementById("searchInput").focus();
+        searchInput.focus();
+    });
+
+    // Debounce function to limit search calls
+    function debounce(func, delay) {
+        let timeoutId;
+        return function (...args) {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => func.apply(this, args), delay);
+        };
+    }
+
+    // Search notes function
+    function searchNotes(query) {
+        const filteredNotes = allNotes.filter(note => {
+            const titleMatch = note.title && note.title.toLowerCase().includes(query.toLowerCase());
+            const contentMatch = note.content && note.content.toLowerCase().includes(query.toLowerCase());
+            let shouldAdd = false;
+
+            switch (currentView) {
+                case "notes":
+                    shouldAdd = !note.is_deleted && !note.is_archived;
+                    break;
+                case "archive":
+                    shouldAdd = note.is_archived && !note.is_deleted;
+                    break;
+                case "trash":
+                    shouldAdd = note.is_deleted;
+                    break;
+            }
+
+            return shouldAdd && (titleMatch || contentMatch);
+        });
+
+        // Clear and re-render filtered notes
+        notesGrid.innerHTML = "";
+        filteredNotes.forEach(note => {
+            addNoteToUI(note.id, note.title || "", note.content || "", note.colour || "white");
+        });
+    }
+
+    // Debounced search handler
+    const debouncedSearch = debounce(searchNotes, 300);
+
+    // Search input event listener
+    searchInput.addEventListener("input", function () {
+        const query = searchInput.value.trim();
+        if (query === "") {
+            fetchNotes(); // Reset to full list if query is empty
+        } else {
+            debouncedSearch(query);
+        }
     });
 
     function switchView(view) {
@@ -76,12 +137,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
         document.getElementById(`${view}Tab`).classList.add("active");
 
+        // Update header title based on current view
+        switch (currentView) {
+            case "notes":
+                headerTitle.textContent = "Fundoo";
+                break;
+            case "archive":
+                headerTitle.textContent = "Archive";
+                break;
+            case "trash":
+                headerTitle.textContent = "Bin";
+                break;
+        }
+
         document.body.classList.remove("notes-active", "archive-active", "trash-active");
         document.body.classList.add(`${view}-active`);
 
         document.querySelector(".fundoo-dash-create-note").style.display = view === "notes" ? "block" : "none";
 
         fetchNotes();
+
+        // Reset search input and trigger search if there's a query
+        const query = searchInput.value.trim();
+        if (query) debouncedSearch(query);
     }
 
     // Save note on blur (title or content)
@@ -109,25 +187,31 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
+            allNotes = notes; // Store all notes for filtering
             notesGrid.innerHTML = "";
 
-            notes.forEach(note => {
-                let shouldAdd = false;
+            const query = searchInput.value.trim();
+            if (query) {
+                searchNotes(query); // Apply search if there's a query
+            } else {
+                notes.forEach(note => {
+                    let shouldAdd = false;
 
-                switch (currentView) {
-                    case "notes":
-                        shouldAdd = !note.is_deleted && !note.is_archived;
-                        break;
-                    case "archive":
-                        shouldAdd = note.is_archived && !note.is_deleted;
-                        break;
-                    case "trash":
-                        shouldAdd = note.is_deleted;
-                        break;
-                }
+                    switch (currentView) {
+                        case "notes":
+                            shouldAdd = !note.is_deleted && !note.is_archived;
+                            break;
+                        case "archive":
+                            shouldAdd = note.is_archived && !note.is_deleted;
+                            break;
+                        case "trash":
+                            shouldAdd = note.is_deleted;
+                            break;
+                    }
 
-                if (shouldAdd) addNoteToUI(note.id, note.title || "", note.content || "", note.colour || "white");
-            });
+                    if (shouldAdd) addNoteToUI(note.id, note.title || "", note.content || "", note.colour || "white");
+                });
+            }
         })
         .catch(error => console.error("Request Failed:", error));
     }
@@ -147,6 +231,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 addNoteToUI(data.note.id, data.note.title || "", data.note.content || "", data.note.colour || "white");
                 noteTitleInput.value = "";
                 noteInput.value = "";
+                fetchNotes(); // Refresh notes after saving
             } else {
                 console.error("Error:", data.errors);
             }
@@ -195,7 +280,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 event.target.classList.contains("delete-permanent-icon") || 
                 event.target.classList.contains("colour-icon")) return;
 
-            // Set modal title, content, and color
             modalNoteTitle.value = noteDiv.querySelector("h3").textContent;
             modalNoteContent.value = noteDiv.querySelector("p").textContent;
             const noteColor = noteDiv.style.backgroundColor || "white";
@@ -235,7 +319,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
             noteModal.show();
 
-            // Update note only when modal is hidden
             noteModal._element.addEventListener('hidden.bs.modal', function () {
                 const updatedTitle = modalNoteTitle.value.trim();
                 const updatedContent = modalNoteContent.value.trim();
@@ -316,6 +399,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 modalNoteTitle.value = data.note.title || "";
                 modalNoteContent.value = data.note.content || "";
                 console.log("Note updated successfully:", data.note);
+                fetchNotes(); // Refresh notes after update
             } else {
                 console.error("Error updating note:", data.errors);
             }
@@ -404,6 +488,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.querySelector(".modal-content.fundoo-dash-note").style.backgroundColor = colour;
                 }
                 console.log(data.message);
+                fetchNotes(); // Refresh notes after color update
             } else {
                 console.error("Error:", data.errors);
             }
