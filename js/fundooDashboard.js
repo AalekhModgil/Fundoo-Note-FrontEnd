@@ -483,12 +483,13 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(response => response.json())
         .then(data => {
             if (data.message) {
+                // Update the note's background color in the UI
                 noteElement.style.backgroundColor = colour;
                 if (noteModal._isShown) {
                     document.querySelector(".modal-content.fundoo-dash-note").style.backgroundColor = colour;
                 }
                 console.log(data.message);
-                fetchNotes(); // Refresh notes after color update
+                // No need to call fetchNotes() here; the UI is already updated
             } else {
                 console.error("Error:", data.errors);
             }
