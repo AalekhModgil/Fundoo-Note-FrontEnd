@@ -53,8 +53,16 @@
         <div class="fundoo-dash-main-content">
             <!-- Note Creation with Title -->
             <section class="fundoo-dash-create-note">
-                <input type="text" id="noteTitleInput" placeholder="Title">
-                <textarea id="noteInput" placeholder="Create a new note..."></textarea>
+                <div class="note-input-wrapper">
+                    <input type="text" id="noteInitialInput" placeholder="Take a note...">
+                    <div class="note-expanded" style="display: none;">
+                        <input type="text" id="noteTitleInput" placeholder="Title">
+                        <textarea id="noteInput" placeholder="Take a note..."></textarea>
+                        <div class="note-options">
+                            <button id="closeNoteButton" class="close-btn">Close</button>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <!-- Notes Grid (Dynamically Updated) -->

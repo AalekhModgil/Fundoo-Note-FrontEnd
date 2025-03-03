@@ -1,7 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
+    const noteInitialInput = document.getElementById("noteInitialInput");
     const noteTitleInput = document.getElementById("noteTitleInput");
     const noteInput = document.getElementById("noteInput");
     const notesGrid = document.querySelector(".fundoo-dash-notes-grid");
+    const noteExpanded = document.querySelector(".note-expanded");
+    const closeNoteButton = document.getElementById("closeNoteButton");
     const modalNoteTitle = document.getElementById("modalNoteTitle");
     const modalNoteContent = document.getElementById("modalNoteContent");
     const noteModal = new bootstrap.Modal(document.getElementById("noteModal"));
@@ -12,10 +15,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const profileDropdown = document.getElementById("profileDropdown");
     const menuIcon = document.getElementById("menuIcon");
     const sidebar = document.querySelector(".fundoo-dash-sidebar");
+    const mainContent = document.querySelector(".fundoo-dash-main-content");
     const headerTitle = document.getElementById("headerTitle");
     const searchInput = document.getElementById("searchInput");
     let currentView = "notes";
-    let allNotes = []; // Store all fetched notes for filtering
+    let allNotes = [];
 
     if (!jwtToken) {
         alert("You must be logged in to create and view notes.");
@@ -45,7 +49,31 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Toggle sidebar between compact and expanded
     menuIcon.addEventListener("click", function () {
-        sidebar.classList.toggle("compact");
+        const isMobile = window.innerWidth <= 768;
+        if (isMobile) {
+            sidebar.classList.toggle("active");
+            mainContent.classList.toggle("shifted");
+        } else {
+            sidebar.classList.toggle("compact");
+        }
+    });
+
+    // Close sidebar if clicked outside on mobile
+    document.addEventListener("click", function (event) {
+        const isMobile = window.innerWidth <= 768;
+        if (isMobile && !sidebar.contains(event.target) && !menuIcon.contains(event.target) && sidebar.classList.contains("active")) {
+            sidebar.classList.remove("active");
+            mainContent.classList.remove("shifted");
+        }
+    });
+
+    // Resize event to handle orientation changes or window resizing
+    window.addEventListener("resize", function () {
+        const isMobile = window.innerWidth <= 768;
+        if (!isMobile && sidebar.classList.contains("active")) {
+            sidebar.classList.remove("active");
+            mainContent.classList.remove("shifted");
+        }
     });
 
     // Fetch Notes on Page Load
@@ -100,7 +128,6 @@ document.addEventListener("DOMContentLoaded", function () {
             return shouldAdd && (titleMatch || contentMatch);
         });
 
-        // Clear and re-render filtered notes
         notesGrid.innerHTML = "";
         filteredNotes.forEach(note => {
             addNoteToUI(note.id, note.title || "", note.content || "", note.colour || "white");
@@ -114,10 +141,54 @@ document.addEventListener("DOMContentLoaded", function () {
     searchInput.addEventListener("input", function () {
         const query = searchInput.value.trim();
         if (query === "") {
-            fetchNotes(); // Reset to full list if query is empty
+            fetchNotes();
         } else {
             debouncedSearch(query);
         }
+    });
+
+    // Expand note input on click
+    noteInitialInput.addEventListener("click", function (event) {
+        if (currentView === "notes") {
+            noteInitialInput.style.display = "none";
+            noteExpanded.style.display = "block";
+            noteTitleInput.focus();
+            // Add document click listener when expanded
+            document.addEventListener("click", handleOutsideClick);
+        }
+    });
+
+    // Handle clicks outside the expanded note area
+    function handleOutsideClick(event) {
+        if (!noteExpanded.contains(event.target) && event.target !== noteInitialInput) {
+            const title = noteTitleInput.value.trim();
+            const content = noteInput.value.trim();
+            if (title || content) {
+                saveNote(title, content);
+            }
+            noteTitleInput.value = "";
+            noteInput.value = "";
+            noteExpanded.style.display = "none";
+            noteInitialInput.style.display = "block";
+            // Remove the listener after collapsing
+            document.removeEventListener("click", handleOutsideClick);
+        }
+    }
+
+    // Save note and close on button click
+    closeNoteButton.addEventListener("click", function (e) {
+        e.preventDefault();
+        const title = noteTitleInput.value.trim();
+        const content = noteInput.value.trim();
+        if (title || content) {
+            saveNote(title, content);
+        }
+        noteTitleInput.value = "";
+        noteInput.value = "";
+        noteExpanded.style.display = "none";
+        noteInitialInput.style.display = "block";
+        // Remove the listener when closing with button
+        document.removeEventListener("click", handleOutsideClick);
     });
 
     function switchView(view) {
@@ -137,7 +208,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         document.getElementById(`${view}Tab`).classList.add("active");
 
-        // Update header title based on current view
         switch (currentView) {
             case "notes":
                 headerTitle.textContent = "Fundoo";
@@ -155,25 +225,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         document.querySelector(".fundoo-dash-create-note").style.display = view === "notes" ? "block" : "none";
 
-        fetchNotes();
-
-        // Reset search input and trigger search if there's a query
         const query = searchInput.value.trim();
         if (query) debouncedSearch(query);
     }
-
-    // Save note on blur (title or content)
-    noteInput.addEventListener("blur", function () {
-        const title = noteTitleInput.value.trim();
-        const content = noteInput.value.trim();
-        if (title || content) saveNote(title, content);
-    });
-
-    noteTitleInput.addEventListener("blur", function () {
-        const title = noteTitleInput.value.trim();
-        const content = noteInput.value.trim();
-        if (title || content) saveNote(title, content);
-    });
 
     function fetchNotes() {
         fetch("http://localhost:3000/api/v1/notes/getNote", {
@@ -187,12 +241,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            allNotes = notes; // Store all notes for filtering
+            allNotes = notes;
             notesGrid.innerHTML = "";
 
             const query = searchInput.value.trim();
             if (query) {
-                searchNotes(query); // Apply search if there's a query
+                searchNotes(query);
             } else {
                 notes.forEach(note => {
                     let shouldAdd = false;
@@ -229,9 +283,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(data => {
             if (data.note) {
                 addNoteToUI(data.note.id, data.note.title || "", data.note.content || "", data.note.colour || "white");
-                noteTitleInput.value = "";
-                noteInput.value = "";
-                fetchNotes(); // Refresh notes after saving
+                fetchNotes();
             } else {
                 console.error("Error:", data.errors);
             }
@@ -398,8 +450,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 noteElement.querySelector("p").textContent = data.note.content || "";
                 modalNoteTitle.value = data.note.title || "";
                 modalNoteContent.value = data.note.content || "";
-                console.log("Note updated successfully:", data.note);
-                fetchNotes(); // Refresh notes after update
+                fetchNotes();
             } else {
                 console.error("Error updating note:", data.errors);
             }
@@ -483,13 +534,10 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(response => response.json())
         .then(data => {
             if (data.message) {
-                // Update the note's background color in the UI
                 noteElement.style.backgroundColor = colour;
                 if (noteModal._isShown) {
                     document.querySelector(".modal-content.fundoo-dash-note").style.backgroundColor = colour;
                 }
-                console.log(data.message);
-                // No need to call fetchNotes() here; the UI is already updated
             } else {
                 console.error("Error:", data.errors);
             }

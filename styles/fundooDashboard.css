@@ -23,6 +23,7 @@ body {
     background: #fff;
     border-bottom: 1px solid #e0e0e0;
     position: relative;
+    justify-content: space-between;
 }
 
 .menu-icon {
@@ -38,6 +39,7 @@ body {
     align-items: center;
     flex: 1;
     gap: 20px;
+    min-width: 0;
 }
 
 .fundoo-title {
@@ -61,7 +63,8 @@ body {
     max-width: 600px;
     height: 40px;
     border: 1px solid #e0e0e0;
-    flex-shrink: 0;
+    flex-shrink: 1;
+    min-width: 0;
 }
 
 .fundoo-dash-search i {
@@ -77,6 +80,7 @@ body {
     border-radius: 24px;
     flex: 1;
     color: #202124;
+    width: 100%;
 }
 
 .fundoo-dash-container {
@@ -94,6 +98,7 @@ body {
     overflow-y: auto;
     height: 100%;
     transition: width 0.3s ease-in-out;
+    margin-top: 0.5em;
 }
 
 .fundoo-dash-sidebar.compact {
@@ -162,43 +167,95 @@ body {
 .fundoo-dash-create-note {
     display: flex;
     flex-direction: column;
-    width: 60%;
-    padding: 1em;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-    margin: 2vh auto;
+    width: 100%;
+    max-width: 600px;
+    padding: 0;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+    margin: 20px auto;
+    transition: all 0.3s ease-in-out;
+}
+
+.note-input-wrapper {
+    width: 100%;
+}
+
+#noteInitialInput {
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    outline: none;
+    font-size: 1em;
+    background: transparent;
+    color: #202124;
+    border-radius: 8px 8px 0 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.note-expanded {
+    padding: 12px 16px;
+    display: none;
 }
 
 .fundoo-dash-create-note input#noteTitleInput {
     width: 100%;
-    padding: 10px;
+    padding: 0;
     border: none;
     outline: none;
-    font-size: 1.4em;
-    margin-bottom: 10px;
+    font-size: 1.2em;
+    margin-bottom: 8px;
     background: transparent;
     color: #202124;
 }
 
-.fundoo-dash-create-note textarea {
+.fundoo-dash-create-note textarea#noteInput {
     width: 100%;
     min-height: 2.5em;
-    max-height: 6em;
-    padding: 10px;
-    border-color: transparent !important;
-    border-radius: 8px;
+    max-height: 10em;
+    padding: 0;
+    border: none;
+    outline: none;
     font-size: 1em;
     resize: none;
-    transition: all 0.3s ease-in-out;
+    background: transparent;
     color: #202124;
 }
 
-.fundoo-dash-create-note textarea:focus {
-    min-height: 8em;
-    border-color: transparent !important;
-    outline: none;
-    box-shadow: none;
+.note-options {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.note-options i {
+    font-size: 1.2em;
+    color: #5f6368;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 50%;
+    transition: background 0.2s ease-in-out;
+}
+
+.note-options i:hover {
+    background-color: #f1f3f4;
+}
+
+.close-btn {
+    margin-left: auto;
+    padding: 6px 12px;
+    border: none;
+    background: transparent;
+    color: #202124;
+    font-size: 0.9em;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s ease-in-out;
+}
+
+.close-btn:hover {
+    background-color: #e0e0e0;
 }
 
 .fundoo-dash-note h3 {
@@ -250,6 +307,9 @@ body {
     margin-bottom: 15px;
     background: white;
     border: 1px solid #e0e0e0;
+    min-width: 200px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .fundoo-dash-note:hover {
@@ -482,4 +542,129 @@ body {
     border-radius: 8px;
     padding: 15px;
     border: 1px solid #e0e0e0;
+}
+
+/* Tablet and Mobile Adjustments */
+@media (max-width: 1024px) {
+    .fundoo-dash-header {
+        padding: 0.5em 1em;
+    }
+
+    .fundoo-title {
+        font-size: 1.5em;
+        min-width: 80px;
+    }
+
+    .fundoo-dash-search {
+        width: 60%;
+        max-width: 400px;
+    }
+
+    .fundoo-dash-profile {
+        margin-left: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .fundoo-dash-header {
+        padding: 0.5em 1em;
+        flex-wrap: wrap;
+        display: flex;
+    }
+
+    .header-title-search {
+        width: 100%;
+        order: 1;
+        margin-bottom: 10px;
+    }
+
+    .fundoo-title {
+        font-size: 1.3em;
+        min-width: 60px;
+    }
+
+    .fundoo-dash-search {
+        width: 100%;
+        max-width: none;
+        margin-top: 10px;
+    }
+
+    .fundoo-dash-profile {
+        order: 2;
+        margin-left: 0;
+    }
+
+    .menu-icon {
+        order: 0;
+        font-size: 1.5em;
+        padding: 0.5em;
+    }
+}
+
+/* Responsive Sidebar */
+@media (max-width: 768px) {
+    .fundoo-dash-sidebar {
+        position: fixed;
+        top: 80px;
+        left: -250px;
+        width: 250px;
+        height: calc(100vh - 60px);
+        transition: left 0.3s ease-in-out;
+        z-index: 1001;
+    }
+
+    .fundoo-dash-sidebar.active {
+        left: 0;
+    }
+
+    .fundoo-dash-sidebar.compact {
+        width: 60px;
+        left: -60px;
+    }
+
+    .fundoo-dash-sidebar.compact.active {
+        left: 0;
+    }
+
+    .fundoo-dash-main-content {
+        margin-left: 0;
+        width: 100%;
+        transition: margin-left 0.3s ease-in-out;
+    }
+
+    .fundoo-dash-main-content.shifted {
+        margin-left: 250px;
+    }
+}
+
+/* Responsive Note Grid */
+@media (max-width: 600px) {
+    .fundoo-dash-notes-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .fundoo-dash-create-note {
+        width: 90%;
+    }
+}
+
+@media (min-width: 601px) and (max-width: 1024px) {
+    .fundoo-dash-notes-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .fundoo-dash-create-note {
+        width: 80%;
+    }
+}
+
+@media (min-width: 1025px) {
+    .fundoo-dash-notes-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+
+    .fundoo-dash-create-note {
+        width: 100%;
+        max-width: 600px;
+    }
 }
